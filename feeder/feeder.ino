@@ -63,7 +63,7 @@ void checkForFeeding() {
   readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month,
   &year);
 
-  if (hour == 9 && minute == 0 && second == 0) {
+  if (hour == 9 && minute == 30 && second == 0) {
     // morning feeding
     feed();
   } 
