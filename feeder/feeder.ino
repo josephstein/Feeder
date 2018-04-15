@@ -2,10 +2,35 @@
 #include "Wire.h"
 #define DS3231_I2C_ADDRESS 0x68
 
+const int BUZZER_PIN = 8;
 const int SERVO_PIN = 13;
+
 const int OPEN_POSITION = 120;
 const int CLOSED_POSITION = 20;
+
 Servo servo;
+
+// BUZZER CONSTONANTS
+const int c = 261;
+const int d = 294;
+const int e = 329;
+const int f = 349;
+const int g = 391;
+const int gS = 415;
+const int a = 440;
+const int aS = 455;
+const int b = 466;
+const int cH = 523;
+const int cSH = 554;
+const int dH = 587;
+const int dSH = 622;
+const int eH = 659;
+const int fH = 698;
+const int fSH = 740;
+const int gH = 784;
+const int gSH = 830;
+const int aH = 880;
+
 
 void setup(){
   Wire.begin();
@@ -14,6 +39,8 @@ void setup(){
   servo.attach(SERVO_PIN);
   pinMode(SERVO_PIN, OUTPUT);
   servo.write(CLOSED_POSITION);
+
+  pinMode(BUZZER_PIN, OUTPUT);
   
 //  setDS3231time(7,  // day of week
 //                4,  // month
@@ -27,6 +54,7 @@ void setup(){
 
 void loop(){
   displayTime();
+  checkForFeeding();
   delay(1000);
 }
 
@@ -35,25 +63,97 @@ void checkForFeeding() {
   readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month,
   &year);
 
-  int feedDelay = 3000; // 5 minutes
-
-  if (hour == 8 && minute == 0) {
+  if (hour == 9 && minute == 0 && second == 0) {
     // morning feeding
     feed();
-  } else if (hour == 14 && minute == 0) {
-    // afternoon;
-    feed();
-  } else if (hour == 20 && minute == 0) {
-    // evening;
-    feed();
-  }
+  } 
+//  else if (hour == 14 && minute == 0 && second == 0) {
+//    // afternoon;
+//    feed();
+//  } else if (hour == 20 && minute == 0 && second == 0) {
+//    // evening;
+//    feed();
+//  }
 }
 
 void feed() {
-  servo.write(120);
-  delay(500);
-  servo.write(0);
+  playMusic(); 
+  
+  // 500 = 30g
+  // 350 = 10g
+  // 250 = 7.5g
+  // 200 = 2.14g
+  // 100 = nothing
+
+  float totalTime = 420000; // 7m
+  float numFeedings = 14; // 14 * 200ms delay = 30g
+  float feedDelay = totalTime / numFeedings;
+  Serial.print("Feed delay = ");
+  Serial.print(feedDelay);
+  Serial.println("");
+  
+  for (int i=0; i < numFeedings; i++){
+    Serial.print("Feed portion #");
+    Serial.print(i);
+    Serial.println("");
+    
+    feedPortion();
+    delay(feedDelay);
+   }
 }
+
+void feedPortion() {
+  servo.write(OPEN_POSITION);
+  delay(200);
+  servo.write(CLOSED_POSITION);
+}
+
+/*
+ * BUZZER METHODS
+ */
+
+void playMusic() {
+  beep(a, 500);
+  beep(a, 500);    
+  beep(a, 500);
+  beep(f, 350);
+  beep(cH, 150);  
+  beep(a, 500);
+  beep(f, 350);
+  beep(cH, 150);
+  beep(a, 650);
+ 
+  delay(500);
+ 
+  beep(eH, 500);
+  beep(eH, 500);
+  beep(eH, 500);  
+  beep(fH, 350);
+  beep(cH, 150);
+  beep(gS, 500);
+  beep(f, 350);
+  beep(cH, 150);
+  beep(a, 650);
+ 
+  delay(500);
+}
+
+
+void beep(int note, int duration) {
+  //Play tone on buzzerPin
+  tone(BUZZER_PIN, note, duration);
+
+  delay(duration);
+ 
+  //Stop tone on buzzerPin
+  noTone(BUZZER_PIN);
+ 
+  delay(50);
+}
+
+/*
+ * RTC METHODS
+ */
 
 // Convert normal decimal numbers to binary coded decimal
 byte decToBcd(byte val){
