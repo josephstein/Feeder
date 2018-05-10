@@ -10,7 +10,7 @@ const int CLOSED_POSITION = 20;
 
 Servo servo;
 
-// BUZZER CONSTONANTS
+// BUZZER CONSONANTS
 const int c = 261;
 const int d = 294;
 const int e = 329;
@@ -39,6 +39,7 @@ void setup(){
   servo.attach(SERVO_PIN);
   pinMode(SERVO_PIN, OUTPUT);
   servo.write(CLOSED_POSITION);
+  //servo.detach();
 
   pinMode(BUZZER_PIN, OUTPUT);
   
@@ -63,17 +64,16 @@ void checkForFeeding() {
   readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month,
   &year);
 
-  if (hour == 9 && minute == 30 && second == 0) {
-    // morning feeding
+  if (hour == 6 && minute == 30 && second == 0) {
+    // morning
     feed();
-  } 
-//  else if (hour == 14 && minute == 0 && second == 0) {
-//    // afternoon;
-//    feed();
-//  } else if (hour == 20 && minute == 0 && second == 0) {
-//    // evening;
-//    feed();
-//  }
+  } else if (hour == 12 && minute == 30 && second == 0) {
+    // afternoon
+    feed();
+  } else if (hour == 19 && minute == 0 && second == 0) {
+    // evening
+    feed();
+  }
 }
 
 void feed() {
@@ -85,7 +85,7 @@ void feed() {
   // 200 = 2.14g
   // 100 = nothing
 
-  float totalTime = 420000; // 7m
+  float totalTime = 900000; // 15m
   float numFeedings = 14; // 14 * 200ms delay = 30g
   float feedDelay = totalTime / numFeedings;
   Serial.print("Feed delay = ");
@@ -103,9 +103,11 @@ void feed() {
 }
 
 void feedPortion() {
+  //servo.attach(SERVO_PIN);
   servo.write(OPEN_POSITION);
-  delay(200);
+  delay(250);
   servo.write(CLOSED_POSITION);
+  //servo.detach();
 }
 
 /*
