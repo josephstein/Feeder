@@ -5,8 +5,8 @@
 const int BUZZER_PIN = 8;
 const int SERVO_PIN = 13;
 
-const int OPEN_POSITION = 120;
-const int CLOSED_POSITION = 20;
+const int OPEN_POSITION = 140;
+const int CLOSED_POSITION = 40;
 
 Servo servo;
 
@@ -105,7 +105,7 @@ void feed() {
 void feedPortion() {
   //servo.attach(SERVO_PIN);
   servo.write(OPEN_POSITION);
-  delay(250);
+  delay(350);
   servo.write(CLOSED_POSITION);
   //servo.detach();
 }
