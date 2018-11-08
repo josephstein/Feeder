@@ -5,8 +5,9 @@
 const int BUZZER_PIN = 8;
 const int SERVO_PIN = 13;
 
-const int OPEN_POSITION = 140;
-const int CLOSED_POSITION = 40;
+const int OPEN = 180;
+const int CLOSED = 0;
+
 
 Servo servo;
 
@@ -38,7 +39,7 @@ void setup(){
 
   servo.attach(SERVO_PIN);
   pinMode(SERVO_PIN, OUTPUT);
-  servo.write(CLOSED_POSITION);
+  servo.write(CLOSED);
   //servo.detach();
 
   pinMode(BUZZER_PIN, OUTPUT);
@@ -67,7 +68,7 @@ void checkForFeeding() {
   if (hour == 6 && minute == 30 && second == 0) {
     // morning
     feed();
-  } else if (hour == 12 && minute == 30 && second == 0) {
+  } else if (hour == 12 && minute == 0 && second == 0) {
     // afternoon
     feed();
   } else if (hour == 19 && minute == 0 && second == 0) {
@@ -79,24 +80,10 @@ void checkForFeeding() {
 void feed() {
   playMusic(); 
   
-  // 500 = 30g
-  // 350 = 10g
-  // 250 = 7.5g
-  // 200 = 2.14g
-  // 100 = nothing
-
-  float totalTime = 900000; // 15m
-  float numFeedings = 14; // 14 * 200ms delay = 30g
-  float feedDelay = totalTime / numFeedings;
-  Serial.print("Feed delay = ");
-  Serial.print(feedDelay);
-  Serial.println("");
+  float numFeedings = 1;
+  float feedDelay = minutesToSeconds(1);
   
   for (int i=0; i < numFeedings; i++){
-    Serial.print("Feed portion #");
-    Serial.print(i);
-    Serial.println("");
-    
     feedPortion();
     delay(feedDelay);
    }
@@ -104,10 +91,14 @@ void feed() {
 
 void feedPortion() {
   //servo.attach(SERVO_PIN);
-  servo.write(OPEN_POSITION);
-  delay(350);
-  servo.write(CLOSED_POSITION);
+  servo.write(OPEN);
+  delay(2000);
+  servo.write(CLOSED);
   //servo.detach();
+}
+
+float minutesToSeconds(float minutes) {
+  return minutes * 60000;
 }
 
 /*
