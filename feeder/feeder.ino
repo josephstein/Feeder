@@ -8,7 +8,6 @@ const int SERVO_PIN = 13;
 const int OPEN = 180;
 const int CLOSED = 0;
 
-
 Servo servo;
 
 // BUZZER CONSONANTS
@@ -44,12 +43,12 @@ void setup(){
 
   pinMode(BUZZER_PIN, OUTPUT);
   
-//  setDS3231time(7,  // day of week
-//                4,  // month
-//                7,  // day
-//                18, // year
-//                17, // hour
-//                21, // minute
+//  setDS3231time(2,  // day of week
+//                11,  // month
+//                23,  // day
+//                20, // year
+//                11, // hour (24hr)
+//                20, // minute
 //                0  // seconds
 //                );
 }
@@ -62,26 +61,24 @@ void loop(){
 
 void checkForFeeding() {
   byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
-  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month,
-  &year);
+  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
 
   if (hour == 6 && minute == 30 && second == 0) {
     // morning
-    feed();
-  } else if (hour == 12 && minute == 0 && second == 0) {
+    feed(4);
+  } else if (hour == 11 && minute == 30 && second == 0) {
     // afternoon
-    feed();
+    //feed(4);
   } else if (hour == 19 && minute == 0 && second == 0) {
     // evening
-    feed();
+    // feed();
   }
 }
 
-void feed() {
+void feed(float numFeedings) {
   playMusic(); 
   
-  float numFeedings = 1;
-  float feedDelay = minutesToSeconds(1);
+  float feedDelay = minutesToSeconds(0.5);
   
   for (int i=0; i < numFeedings; i++){
     feedPortion();
@@ -239,4 +236,3 @@ void displayTime(){
   Serial.print(second, DEC);
   Serial.println("");
 }
-
